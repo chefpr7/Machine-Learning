@@ -5,6 +5,7 @@
 
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 # In[ ]:
@@ -21,27 +22,20 @@ class LogR:
         return Z
     
     
-    def cost_func(self,Z):
-        cost = self.Y*np.log(Z)+(1-self.Y)*np.log(1-Z)
+    def cost_func(self):
+        Z=self.sigmoid_func()
+        cost = -1*(self.Y.T.dot(np.log(Z))+(1-self.Y).T.dot(np.log(1-Z)))
         return cost
 
 
     def gradient_desc(self,Z,alpha=0.1,i=10000):
-        m=Z.shape[0]
+        m=self.X.shape[0]
         D=np.zeros((3,1))
         for j in range(i):
+            Z=self.sigmoid_func()
             D=((((Z - self.Y).T).dot(self.X)).T)/m
-            self.theta = self.theta - D*alpha
+            self.theta = self.theta + D*alpha
         return self.theta
-   
-   
-
-
-        
-    
-
-    
-
 
 # In[ ]:
 
@@ -59,14 +53,26 @@ def accuracy(Y_pred,Y):
     return acc
 
 
-def sigmoid(X,theta):
+def sigmoidf(X,theta):
     Z=1/(1+np.exp(X.dot(theta)))
     return Z
     
 
 def predict(X,theta):
     X=np.insert(X,0,1,axis=1)
-    Y_pred=sigmoid(X,theta)
-    Y_pred=1-(Y_pred//0.500000000001)
+    Z=sigmoidf(X,theta)
+    #print(Z)
+    Y_pred=(Z//0.500000000001)
     return Y_pred
 
+
+def plott(X,Y,theta):
+    plt.figure()
+    for i in range(Y.shape[0]):
+        if(Y[i][0]==1):
+            plt.plot(X[i][0],X[i][1],"bx")
+        if(Y[i][0]==0):
+            plt.plot(X[i][0],X[i][1],"rx")
+    R=np.array([np.arange(-2,2,0.02)]).T
+    for j in range(200):
+        plt.plot(R[j][0],(theta[0][0]+theta[1][0]*R[j][0])/(theta[2][0]*-1),"gx")
