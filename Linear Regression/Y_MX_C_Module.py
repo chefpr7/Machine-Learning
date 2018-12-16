@@ -6,38 +6,34 @@
 
 #module for linear regression
 import numpy as np
+import random
 
 class LinR:
     
    # def __init__(self):    
     def fitt(self,Xin,Yin,alpha,i,length):
-        self.X=np.insert(Xin,0,1,axis=1)  #inserting an extra column containing 1 in matrix X
+        self.X=Xin  #inserting an extra column containing 1 in matrix X
         self.Y=Yin
-        self.theta=np.random.rand(3,1)
-        self.mini_gradient_descent(length,alpha,i)
-
-    
-    #Hypothesis function
-    def hypothesis(self,X,theta):
-        H=np.zeros((X[:,0].size,1))
-        H=X.dot(theta)
-        return H
-    
+        self.M=np.random.rand(2,1)
+        self.C=np.ones((Xin.shape[0],1))*random.random()
+        self.gradientdes(alpha,i)
+        #self.mini_gradient_descent(length,alpha,i)
     
     #Cost function
     def cost(self):
-        J = sum((self.X.dot(self.theta)-self.Y)**2)/(2*self.X.shape[0])
+        J = sum((self.X.dot(self.M)+C-self.Y)**2)/(2*self.X.shape[0])
         return J
     
-
+ 
     #gradient descent
     def gradientdes(self,alpha=0.1,i=1000):
         m=self.X.shape[0]
-        D=np.zeros((3,1))
         for j in range(i):
-            D=((((self.X.dot(self.theta) - self.Y).T).dot(self.X)).T)/m
-            self.theta = self.theta - D*alpha
-        return self.theta
+            DM=((((self.X.dot(self.M)+self.C - self.Y).T).dot(self.X)).T)/m
+            DC=(self.X.dot(self.M)+self.C - self.Y)/m
+            self.M = self.M - DM*alpha
+            self.C = self.C - DC*alpha
+        return self.M,self.C
     
     #mini gradient descent
     def mini_gradient_descent(self,length,alpha=0.1,i=10000):
@@ -50,10 +46,13 @@ class LinR:
                     v=m-u
                 X1=self.X[u:u+v,:]
                 Y1=self.Y[u:u+v,:]
+                C1=self.C[u:u+v,:]
                 
-                D=((((X1.dot(self.theta) - Y1).T).dot(X1)).T)/v
-                self.theta = self.theta - D*alpha
-        return self.theta
+                DM=((((X1.dot(self.M)+C1 - Y1).T).dot(X1)).T)/v
+                DC=(X1.dot(self.M)+C1 - Y1)/v
+                self.M = self.M - DM*alpha
+                self.C[u:u+v,:] = self.C[u:u+v,:] - DC*alpha
+        return self.M,self.C
     
     #normalization for x
     def normalize(self,X):
@@ -68,8 +67,10 @@ class LinR:
 
     #predictions on test data
     def predict(self,X):
-        X=np.insert(X,0,1,axis=1)
-        return X.dot(self.theta)
+        C1=self.C[0:X.shape[0],:]
+        Y_pred=X.dot(self.M)+C1
+        return Y_pred
+        
         
     
     

@@ -40,48 +40,39 @@ class LinR:
     #mini gradient descent
     def mini_gradient_descent(self,length,alpha=0.1,i=10000):
         m=self.X.shape[0]
+        v=length
         for j in range(i):
             for k in range(m//length):
-                v=length
-                if(k*length+v>m):
-                    v=m
-                X1=self.X[k*length:v,:]
-                Y1=self.Y[k*length:v,:]
+                u=k*length
+                if(u+v>m):
+                    v=m-u
+                X1=self.X[u:u+v,:]
+                Y1=self.Y[u:u+v,:]
                 
                 D=((((X1.dot(self.theta) - Y1).T).dot(X1)).T)/v
                 self.theta = self.theta - D*alpha
         return self.theta
+    
+    #normalization for x
+    def normalize(self,X):
+        R=np.std(X,axis=0)
+        M=np.mean(X,axis=0)
+        X=(X-M)/R
+        return X    
+    
+    def accuracy(self,y_test,y_pred):
+        err=(y_pred-y_test)*100/y_test
+        return 100-np.mean(err) 
+
+    #predictions on test data
+    def predict(self,X,theta):
+        X=np.insert(X,0,1,axis=1)
+        return X.dot(theta)
         
     
     
     
-       
-#normalization for x
-def normalize(X):
-    R=np.std(X,axis=0)
-    M=np.mean(X,axis=0)
-    X=(X-M)/R
-    return X    
-    
-def accuracy(y_test,y_pred):
-    err=(y_pred-y_test)*100/y_test
-    return 100-np.mean(err) 
-
-#predictions on test data
-def predict(X,theta):
-    X=np.insert(X,0,1,axis=1)
-    return X.dot(theta)
- 
-
-    
-    
-        
-        
-    
-        
-
-
-# In[ ]:
+ # In[ ]:
 
 
 
