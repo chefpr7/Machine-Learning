@@ -6,6 +6,7 @@
 
 #module for linear regression
 import numpy as np
+import math
 
 class LinR:
     
@@ -18,15 +19,15 @@ class LinR:
 
     
     #Hypothesis function
-    def hypothesis(self,X,theta):
-        H=np.zeros((X[:,0].size,1))
-        H=X.dot(theta)
+    def hypothesis(self,X):
+        H=X.dot(self.theta)
         return H
     
     
     #Cost function
     def cost(self):
-        J = sum((self.X.dot(self.theta)-self.Y)**2)/(2*self.X.shape[0])
+        H=self.hypothesis(self.X)
+        J = sum((H-self.Y)**2)/(2*self.X.shape[0])
         return J
     
 
@@ -35,7 +36,8 @@ class LinR:
         m=self.X.shape[0]
         D=np.zeros((3,1))
         for j in range(i):
-            D=((((self.X.dot(self.theta) - self.Y).T).dot(self.X)).T)/m
+            H=self.hypothesis(self.X)
+            D=((H - self.Y).T.dot(self.X).T)/m
             self.theta = self.theta - D*alpha
         return self.theta
     
@@ -43,15 +45,17 @@ class LinR:
     def mini_gradient_descent(self,length,alpha=0.1,i=10000):
         m=self.X.shape[0]
         v=length
+        r=math.ceil(m/length)
         for j in range(i):
-            for k in range(m//length):
+            for k in range(r):
                 u=k*length
                 if(u+v>m):
                     v=m-u
                 X1=self.X[u:u+v,:]
                 Y1=self.Y[u:u+v,:]
                 
-                D=((((X1.dot(self.theta) - Y1).T).dot(X1)).T)/v
+                H=self.hypothesis(X1)
+                D=((H - Y1).T.dot(X1).T)/v
                 self.theta = self.theta - D*alpha
         return self.theta
     
@@ -69,7 +73,7 @@ class LinR:
     #predictions on test data
     def predict(self,X):
         X=np.insert(X,0,1,axis=1)
-        return X.dot(self.theta)
+        return self.hypothesis(X)
         
     
     
