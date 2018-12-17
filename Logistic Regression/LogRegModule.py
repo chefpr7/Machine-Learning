@@ -6,6 +6,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 
 # In[ ]:
@@ -18,8 +19,8 @@ class LogR:
         self.theta=np.random.rand(3,1)
         
     def sigmoid_func(self):
-        Z=1/(1+np.exp(self.X.dot(self.theta)))
-        return Z
+        Z=self.X.dot(self.theta)
+        return 1/(1+np.exp(-Z))
     
     
     def cost_func(self):
@@ -34,14 +35,15 @@ class LogR:
         for j in range(i):
             Z=self.sigmoid_func()
             D=((Z - self.Y).T.dot(self.X)).T/m
-            self.theta = self.theta + D*alpha
+            self.theta = self.theta - D*alpha
         return self.theta
     
     def mini_gradient_descent(self,length,alpha=0.1,i=10000):
         m=self.X.shape[0]
         v=length
+        r=math.ceil(m/length)
         for j in range(i):
-            for k in range(m//length):
+            for k in range(r):
                 u=k*length
                 if(u+v>m):
                     v=m-u
@@ -49,7 +51,7 @@ class LogR:
                 Y1=self.Y[u:u+v,:]
                 Z=1/(1+np.exp(X1.dot(self.theta)))
                 D=((((Z - Y1).T).dot(X1)).T)/v
-                self.theta = self.theta + D*alpha
+                self.theta = self.theta - D*alpha
         return self.theta
         
 
@@ -70,7 +72,7 @@ def accuracy(Y_pred,Y):
 
 
 def sigmoidf(X,theta):
-    Z=1/(1+np.exp(X.dot(theta)))
+    Z=1/(1+np.exp(-X.dot(theta)))
     return Z
     
 
@@ -78,7 +80,7 @@ def predict(X,theta):
     X=np.insert(X,0,1,axis=1)
     Z=sigmoidf(X,theta)
     #print(Z)
-    Y_pred=(Z//0.500000000001)
+    Y_pred=(Z>=0.5)
     return Y_pred
 
 
