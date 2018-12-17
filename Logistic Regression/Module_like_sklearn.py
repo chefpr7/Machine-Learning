@@ -45,13 +45,14 @@ class LogR:
     
     def mini_gradient_descent(self,length,alpha=0.1,i=10000):
         m=self.X.shape[0]
+        v=length
         for j in range(i):
             for k in range(m//length):
-                v=length
-                if(k*length+v>m):
-                    v=m
-                X1=self.X[k*length:v,:]
-                Y1=self.Y[k*length:v,:]
+                u=k*length
+                if(u+v>m):
+                    v=m-u
+                X1=self.X[u:u+v,:]
+                Y1=self.Y[u:u+v,:]
                 Z=self.sigmoidf(X1)
                 D=((((Z - Y1).T).dot(X1)).T)/v
                 self.theta = self.theta + D*alpha
