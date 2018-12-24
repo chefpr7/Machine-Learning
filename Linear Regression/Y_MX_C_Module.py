@@ -58,14 +58,14 @@ class LinR:
     def mini_gradient_descent(self):
         
         m=self.X.shape[0]
-        r=math.ceil(m/self.length)
+        r=math.ceil(m/self.length)               # determines the no of times the loop runs
         
         for j in range(self.i):
             v=self.length
             for k in range(r):
                 u=k*self.length
                 if(u+v>m):
-                    v=m-u
+                    v=m-u                         # manages overflowing
                     
                 X1=self.X[u:u+v,:]
                 Y1=self.Y[u:u+v,:]
