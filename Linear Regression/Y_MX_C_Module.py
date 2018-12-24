@@ -58,7 +58,7 @@ class LinR:
     def mini_gradient_descent(self):
         
         m=self.X.shape[0]
-        r=math.ceil(m/self.length)               # determines the no of times the loop runs
+        r=math.ceil(m/self.length)               # determines the no of mini batches
         
         for j in range(self.i):
             v=self.length
