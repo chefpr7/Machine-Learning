@@ -52,10 +52,10 @@ class LinR:
     def mini_gradient_descent(self):
    # Again,functions like gradient descent BUT does so in small batches, hence named mini batch gradient descent
         m=self.X.shape[0]
-        r=math.ceil(m/self.length)
+        r=math.ceil(m/self.length)               # decides the no of mini batches
         
         for j in range(self.i):
-            v=self.length
+            v=self.length                        # manages overflowing
             for k in range(r):
                 u=k*self.length
                 if(u+v>m):
