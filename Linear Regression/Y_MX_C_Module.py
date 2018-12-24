@@ -12,13 +12,21 @@ import math
 class LinR:
     
      
-    def fitt(self,Xin,Yin,alpha,i,length):
+    def fitt(self,Xin,Yin,alpha=0.1,i=10000,length=0):
         self.X=Xin  #inserting an extra column containing 1 in matrix X
         self.Y=Yin
         self.M=np.random.rand(2,1)
         self.C=np.ones((Xin.shape[0],1))*random.random()
+        
+        if(length==0):
+            length=self.X.shape[0]//10   # Initializes the size of the mini batches if not provided by user
+        
+        self.alpha=alpha
+        self.length=length
+        self.i=i
+        
         #self.gradientdes(alpha,i)
-        self.mini_gradient_descent(length,alpha,i)
+        self.mini_gradient_descent()
     
     
      #Hypothesis function
@@ -34,25 +42,28 @@ class LinR:
         return J
                                                                                                                    
                                                                                                                                     
-    #gradient descent
-    def gradientdes(self,alpha=0.1,i=1000):
+    
+    def gradientdes(self):
+    # Derivatives being calculated,this function directs the weights into a journey towards the minima 
         m=self.X.shape[0]
-        for j in range(i):
+        for j in range(self.i):
             H=self.hypothesis(self.X,self.C)
             DM=((H - self.Y).T.dot(self.X).T)/m
             DC= (H - self.Y)/m
-            self.M = self.M - DM*alpha
-            self.C = self.C - DC*alpha
+            self.M = self.M - DM*self.alpha
+            self.C = self.C - DC*self.alpha
         
     
-    #mini gradient descent
-    def mini_gradient_descent(self,length,alpha=0.1,i=10000):
+    # Again,functions like gradient descent BUT does so in small batches, hence named mini batch gradient descent
+    def mini_gradient_descent(self):
+        
         m=self.X.shape[0]
-        v=length
-        r=math.ceil(m/length)
-        for j in range(i):
+        r=math.ceil(m/self.length)
+        
+        for j in range(self.i):
+            v=self.length
             for k in range(r):
-                u=k*length
+                u=k*self.length
                 if(u+v>m):
                     v=m-u
                     
@@ -64,12 +75,11 @@ class LinR:
                 DM=((H - Y1).T.dot(X1).T)/v
                 DC=(H - Y1)/v
                 
-                self.M = self.M - DM*alpha
-                C1 = C1 - DC*alpha
+                self.M = self.M - DM*self.alpha
+                C1 = C1 - DC*self.alpha
                 self.C[u:u+v,:]=C1
                 
-                if(j==0):
-                    print(C1.shape)
+   
     
     #normalization for x
     def normalize(self,X):
@@ -80,6 +90,7 @@ class LinR:
     
     
     def accuracy(self,y_test,y_pred):
+     # Calculates the accuracy of the model,always satisfying if it matches sklearn
         err=(y_pred-y_test)*100/y_test
         return 100-np.mean(err) 
 
