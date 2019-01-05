@@ -7,12 +7,12 @@ import math
  
 class NN :
     
-    def fit(self,Xin,Yin,size=25,L=4,alpha=1,itr=500):
+    def fit(self,Xin,Yin,size=[25],L=4,alpha=1,itr=500,mini_batch_size=0):
         # This function initializes all the required hyperparameters and parameters & other variables required
         self.X=Xin                         
         self.Y=Yin
-        self.L=L                           #No of Layers                        
-        self.A = [0] * L                   #Activation function
+        self.L=L                           # No of Layers                        
+        self.A = [0] * L                   # Activation function
         self.A[0]=self.X
         
         self.w = [0] * (L-1)               # Weights
@@ -21,17 +21,24 @@ class NN :
         
         self.d = [0] * L                   # For calculating partial derivative
         self.der = [0]*L                   # For calculating derivative
-        self.Lambda=0.1                    # For regularization 
+        self.Lambda=0.3                    # For regularization 
           
         self.c=np.unique(self.Y).shape[0]  # No of unique values of Y training set 
         self.y = np.zeros((self.m,self.c)) # For coverting y into a column matrix of shape c, e.g. y=3 is taken as [0 0 1 0] 
         
-        sol = [ size for i in range(L)]    # Size of layers
-        sol[0]=self.X.shape[1]
-        sol[L-1]=self.c
+      # Size of layers
+        sol=np.zeros((1,L-2))
+        sol+=size
+        sol=sol.astype(int)
+        sol=np.insert(sol,0,self.X.shape[1])
+        sol=np.insert(sol,L-1,self.c)
+        print(sol)
         
-        self.alpha=alpha                   # Learning rate
-        self.length=Xin.shape[0]//15       # Length of mini batch
+        self.alpha=alpha # Learning rate
+        
+        if(mini_batch_size==0):
+            self.length=Xin.shape[0]//15       # Length of mini batch
+            
         self.itr=itr                       # No of iterations
         
         epsilon_init=0.2                 
@@ -43,8 +50,8 @@ class NN :
             self.w[i] = np.random.rand(sol[i+1],sol[i])* 2 * epsilon_init - epsilon_init   #initializing weights and bias
             self.b[i] = np.random.rand(1,sol[i+1])* 2 * epsilon_init - epsilon_init
         
-        self.gradient_descent()
-        #self.mini_gradient_descent()
+       # self.gradient_descent()
+        self.mini_gradient_descent()
     
     
     def sigmoidf(self,z):
@@ -58,7 +65,7 @@ class NN :
         #This function optimizes the values of the activation variable through forward propogation
         for i in range(self.L-1):
             self.A[i+1] = self.sigmoidf(np.dot(self.A[i],self.w[i].T)+self.b[i])
-
+        
      
     
     
@@ -72,7 +79,7 @@ class NN :
             
         for i in range(self.L-1):
             
-            self.der[i] += np.dot(self.d[i+1].T,self.A[i])/self.m + self.Lambda/self.m* self.w[i]
+            self.der[i] += np.dot(self.d[i+1].T,self.A[i])/self.m + self.Lambda*self.w[i]/self.m
             
             self.w[i] = self.w[i] - (self.alpha)*self.der[i]
             self.b[i] = self.b[i] - (self.alpha/self.m)*np.sum(self.d[i+1],axis=0)
@@ -102,6 +109,7 @@ class NN :
         for j in range(self.itr):
             self.fwdx()
             self.backpropg()
+            #print(self.A)
                
     
     def mini_gradient_descent(self):
@@ -123,6 +131,7 @@ class NN :
         # Once weights are optimized, pred() predicts the values on the testing data provided by user
         self.A[0]=X
         self.fwdx()
+        #print(self.A)
         y_=self.A[self.L-1]>=0.5
         for i in range(X.shape[0]):
             y_pred = np.argmax(y_,1) 
