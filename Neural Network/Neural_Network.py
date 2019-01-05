@@ -7,31 +7,31 @@ import math
  
 class NN :
     
-    def fit(self,Xin,Yin,size=[25],L=4,alpha=1,itr=500,mini_batch_size=0):
+    def fit(self,Xin,Yin,size=[25],L=2,alpha=1,itr=500,mini_batch_size=0):
         # This function initializes all the required hyperparameters and parameters & other variables required
         self.X=Xin                         
         self.Y=Yin
-        self.L=L                           # No of Layers                        
-        self.A = [0] * L                   # Activation function
+        self.L=L+2                          # No of Layers                        
+        self.A = [0] * self.L                   # Activation function
         self.A[0]=self.X
         
-        self.w = [0] * (L-1)               # Weights
-        self.b = [0] * (L-1)               # bias
+        self.w = [0] * (self.L-1)               # Weights
+        self.b = [0] * (self.L-1)               # bias
         self.m = self.X.shape[0]           # No of training examples
         
-        self.d = [0] * L                   # For calculating partial derivative
-        self.der = [0]*L                   # For calculating derivative
+        self.d = [0] * self.L                   # For calculating partial derivative
+        self.der = [0]*self.L                   # For calculating derivative
         self.Lambda=0.3                    # For regularization 
           
         self.c=np.unique(self.Y).shape[0]  # No of unique values of Y training set 
         self.y = np.zeros((self.m,self.c)) # For coverting y into a column matrix of shape c, e.g. y=3 is taken as [0 0 1 0] 
         
       # Size of layers
-        sol=np.zeros((1,L-2))
+        sol=np.zeros((1,L))
         sol+=size
         sol=sol.astype(int)
         sol=np.insert(sol,0,self.X.shape[1])
-        sol=np.insert(sol,L-1,self.c)
+        sol=np.insert(sol,self.L-1,self.c)
         print(sol)
         
         self.alpha=alpha # Learning rate
@@ -46,7 +46,7 @@ class NN :
         for i in range(self.m):
             self.y[i][int(self.Y[i][0])]=1                 # y as a vector of 0 and 1 i.e. y = 3 means [0 0 0 1] if y = {0,1,2,3}
 
-        for i in range(L-1):                 
+        for i in range(self.L-1):                 
             self.w[i] = np.random.rand(sol[i+1],sol[i])* 2 * epsilon_init - epsilon_init   #initializing weights and bias
             self.b[i] = np.random.rand(1,sol[i+1])* 2 * epsilon_init - epsilon_init
         
