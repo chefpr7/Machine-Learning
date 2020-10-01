@@ -12,18 +12,18 @@ import math
 class LinR:
     
      
-    def fitt(self,Xin,Yin,alpha=0.1,i=10000,length=0):
-        self.X=Xin  #inserting an extra column containing 1 in matrix X
-        self.Y=Yin
-        self.M=np.random.rand(2,1)
-        self.C=np.ones((Xin.shape[0],1))*random.random()
+    def fitt(self, Xin, Yin, alpha = 0.1, i = 10000, length = 0):
+        self.X = Xin  #inserting an extra column containing 1 in matrix X
+        self.Y = Yin
+        self.M = np.random.rand(2,1)
+        self.C = np.ones((Xin.shape[0],1))*random.random()
         
         if(length==0):
-            length=self.X.shape[0]//10   # Initializes the size of the mini batches if not provided by user
+            length = self.X.shape[0]//10   # Initializes the size of the mini batches if not provided by user
         
-        self.alpha=alpha
-        self.length=length
-        self.i=i
+        self.alpha = alpha
+        self.length = length
+        self.i = i
         
         #self.gradientdes(alpha,i)
         self.mini_gradient_descent()
@@ -31,13 +31,13 @@ class LinR:
     
      #Hypothesis function
     def hypothesis(self,X,C):
-        H=X.dot(self.M)+C
+        H = X.dot(self.M) + C
         return H
     
     
     #Cost function
     def cost(self):
-        H=self.hypothesis(self.X,self.C)
+        H = self.hypothesis(self.X,self.C)
         J = sum((H-self.Y)**2)/(2*self.X.shape[0])
         return J
                                                                                                                    
@@ -45,11 +45,11 @@ class LinR:
     
     def gradientdes(self):
     # Derivatives being calculated,this function directs the weights into a journey towards the minima 
-        m=self.X.shape[0]
+        m = elf.X.shape[0]
         for j in range(self.i):
-            H=self.hypothesis(self.X,self.C)
-            DM=((H - self.Y).T.dot(self.X).T)/m
-            DC= (H - self.Y)/m
+            H = self.hypothesis(self.X,self.C)
+            DM = ((H - self.Y).T.dot(self.X).T)/m
+            DC = (H - self.Y)/m
             self.M = self.M - DM*self.alpha
             self.C = self.C - DC*self.alpha
         
